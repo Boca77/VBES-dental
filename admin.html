@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="mk" data-theme="clinical"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DentalVBES - Admin</title>
+  <meta name="description" content="DentalVBES admin dashboard - view booked appointments and add new bookings.">
+
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+
+  
+
+  
+  <link rel="stylesheet" href="assets/css/fonts.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+  <!-- ===================== TOP BAR ===================== -->
+  <header class="admin-top">
+    <div class="container inner">
+      <a class="admin-brand" href="index.html" title="Open public website">
+        <svg class="tooth" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2c-2 0-3 .8-4.3.8C5.7 2.8 4 3.6 4 6.5c0 2 .5 3.7 1 5.5.4 1.5.7 3 1 4.5.3 1.6.6 3.5 1.7 3.5.9 0 1.1-1.4 1.4-3 .3-1.7.5-3 1.9-3s1.6 1.3 1.9 3c.3 1.6.5 3 1.4 3 1.1 0 1.4-1.9 1.7-3.5.3-1.5.6-3 1-4.5.5-1.8 1-3.5 1-5.5 0-2.9-1.7-3.7-3.7-3.7C15 2.8 14 2 12 2z"></path></svg>
+        <span class="bn">Dental<b>VBES</b></span>
+      </a>
+      <span class="admin-tag" data-i18n="ad.tag">Admin panel</span>
+
+      <span class="admin-spacer"></span>
+
+      <span class="admin-date-now"><i class="bi bi-calendar3"></i><span id="nowDate"></span></span>
+
+      <button class="lang-toggle" aria-label="language">
+        <span data-lang="mk">МК</span><span data-lang="en">EN</span>
+      </button>
+
+      <button class="btn btn-sm js-add"><i class="bi bi-plus-lg"></i><span data-i18n="ad.add">New appointment</span></button>
+    </div>
+  </header>
+
+  <!-- ===================== BODY ===================== -->
+  <main class="admin-body">
+    <div class="container">
+
+      <!-- tabs -->
+      <div class="admin-tabs" id="adminTabs">
+        <button class="admin-tab active" data-tab="dashboard"><i class="bi bi-calendar3"></i><span data-i18n="ad.tab_dashboard">Dashboard</span></button>
+        <button class="admin-tab" data-tab="pending"><i class="bi bi-hourglass-split"></i><span data-i18n="ad.tab_pending">Pending</span><span class="tab-badge" id="pendingBadge" hidden>0</span></button>
+        <button class="admin-tab" data-tab="appointments"><i class="bi bi-list-ul"></i><span data-i18n="ad.all_appts">All appointments</span></button>
+      </div>
+
+      <!-- ===================== VIEW: dashboard ===================== -->
+      <section class="admin-view" id="viewDashboard">
+
+      <div class="admin-head">
+        <h1 data-i18n="ad.title">Appointments overview</h1>
+        <p data-i18n="ad.lead">Click a day to see the appointments booked for it.</p>
+      </div>
+
+      <!-- stats -->
+      <div class="stat-row">
+        <div class="stat-card accent">
+          <div class="si"><i class="bi bi-calendar-day"></i></div>
+          <div><div class="sv" id="statToday">0</div><div class="sl" data-i18n="ad.s_today">Today</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="si"><i class="bi bi-calendar-week"></i></div>
+          <div><div class="sv" id="statWeek">0</div><div class="sl" data-i18n="ad.s_week">This week</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="si"><i class="bi bi-calendar-check"></i></div>
+          <div><div class="sv" id="statUpcoming">0</div><div class="sl" data-i18n="ad.s_upcoming">Upcoming</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="si"><i class="bi bi-collection"></i></div>
+          <div><div class="sv" id="statTotal">0</div><div class="sl" data-i18n="ad.s_total">Total booked</div></div>
+        </div>
+      </div>
+
+      <!-- mobile step indicator (hidden on desktop) -->
+      <div class="m-stepper" id="mStepper">
+        <button class="m-step active" data-step="cal"><span class="num">1</span><span data-i18n="ad.step_day">Choose day</span></button>
+        <span class="m-step-sep"><i class="bi bi-chevron-right"></i></span>
+        <button class="m-step" data-step="time"><span class="num">2</span><span data-i18n="ad.step_time">Choose time</span></button>
+      </div>
+
+      <!-- calendar + agenda -->
+      <div class="admin-grid mstep-cal" id="adminGrid">
+
+        <!-- calendar -->
+        <section class="panel calendar-panel">
+          <div class="panel-head">
+            <div>
+              <h2 data-i18n="ad.calendar">Calendar</h2>
+              <div class="ph-sub" data-i18n="ad.cal_sub">Days with a badge have appointments</div>
+            </div>
+            <div class="acal-nav">
+              <button id="acalPrev" aria-label="previous month"><i class="bi bi-chevron-left"></i></button>
+              <b id="acalTitle"></b>
+              <button id="acalNext" aria-label="next month"><i class="bi bi-chevron-right"></i></button>
+            </div>
+          </div>
+          <div class="acal-grid" id="acalGrid"></div>
+          <div class="acal-legend">
+            <span><span class="lg lg-today"></span><span data-i18n="ad.lg_today">Today</span></span>
+            <span><span class="lg lg-has"></span><span data-i18n="ad.lg_has">Has appointments</span></span>
+            <span><span class="lg lg-off"></span><span data-i18n="ad.lg_off">Closed / past</span></span>
+          </div>
+        </section>
+
+        <!-- agenda -->
+        <section class="panel agenda-panel">
+          <button class="m-back btn btn-ghost btn-sm" id="mBack"><i class="bi bi-chevron-left"></i><span data-i18n="ad.back_cal">Back to calendar</span></button>
+          <div class="panel-head">
+            <div>
+              <h2 class="ag-day" id="agDay"></h2>
+              <div class="ag-count" id="agCount"></div>
+            </div>
+            <div class="ag-actions">
+              <button class="btn btn-ghost btn-sm" id="agToday"><i class="bi bi-arrow-counterclockwise"></i><span data-i18n="ad.today_btn">Today</span></button>
+              <button class="btn btn-sm js-add"><i class="bi bi-plus-lg"></i><span data-i18n="ad.add">New appointment</span></button>
+            </div>
+          </div>
+          <div class="ag-list" id="agList"></div>
+          <div class="slot-legend">
+            <span><span class="lgs lgs-free"></span><span data-i18n="ad.free">Free</span></span>
+            <span><span class="lgs lgs-taken"></span><span data-i18n="ad.lg_booked">Booked</span></span>
+            <span class="lgs-hint" data-i18n="ad.click_hint">Click a free slot to book · hover a booked one for details</span>
+          </div>
+        </section>
+
+      </div>
+      </section>
+
+      <!-- ===================== VIEW: all appointments ===================== -->
+      <section class="admin-view" id="viewAppointments" hidden>
+        <div class="admin-head">
+          <h1 data-i18n="ap.title">All booked appointments</h1>
+          <p data-i18n="ap.lead">Every appointment in the system, sorted by date.</p>
+        </div>
+        <div class="ap-toolbar">
+          <div class="ap-filter" id="apFilterWrap">
+            <button type="button" class="ap-date-trigger" id="apDateTrigger" aria-haspopup="dialog" aria-expanded="false">
+              <i class="bi bi-calendar3"></i>
+              <span id="apDateLabel" data-i18n="ap.pick_date">Filter by date</span>
+            </button>
+            <button class="ap-clear" id="apClear" hidden><i class="bi bi-x-lg"></i><span data-i18n="ap.clear">Show all</span></button>
+            <div class="dp-pop" id="apDatePop" role="dialog" aria-label="date picker" hidden></div>
+          </div>
+          <span class="ap-total-badge"><i class="bi bi-collection"></i><b id="apTotal">0</b><span data-i18n="ap.total">total</span></span>
+        </div>
+        <div id="apList" class="ap-list"></div>
+      </section>
+
+      <!-- ===================== VIEW: pending requests ===================== -->
+      <section class="admin-view" id="viewPending" hidden>
+        <div class="admin-head">
+          <h1 data-i18n="pa.title">Appointment requests</h1>
+          <p data-i18n="pa.lead">Requests submitted through the website. Approve or reject them.</p>
+        </div>
+        <div class="ap-summary">
+          <span class="ap-total-badge"><i class="bi bi-hourglass-split"></i><b id="paTotal">0</b><span data-i18n="pa.total">pending</span></span>
+        </div>
+        <div id="paList" class="pa-list"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ===================== ADD APPOINTMENT MODAL ===================== -->
+  <div class="modal" id="addModal">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card" style="max-width:640px">
+      <div id="addBody"></div>
+    </div>
+  </div>
+
+  <!-- ===================== SCRIPTS ===================== -->
+  <script src="assets/scripts/jquery.min.js"></script>
+  <script src="assets/scripts/admin.js"></script>
+
+  
+
+</body></html>
