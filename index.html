@@ -15,6 +15,8 @@
   <link rel="stylesheet" href="assets/css/fonts.css">
   <link rel="stylesheet" href="assets/css/styles.css">
 
+  <!-- Save any invite/recovery token BEFORE the widget loads and strips it from the URL. -->
+  <script>window.__entryHash = window.location.hash || "";</script>
   <!-- Netlify Identity widget (only used here to accept invite / recovery links) -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
@@ -268,12 +270,18 @@
     (function () {
       var identity = window.netlifyIdentity;
       if (!identity) return;
-      var hash = window.location.hash || "";
+      // Use the hash captured in <head>, since the widget has already cleared the URL by now.
+      var hash = window.__entryHash || "";
       var hasToken = /(invite_token|recovery_token|confirmation_token|email_change_token)=/.test(hash);
-      identity.on("init", function () { if (hasToken) identity.open(); });
       // After setting a password / signing in from an invite, go to the admin panel.
       identity.on("login", function () { window.location.href = "admin.html"; });
-      identity.init();
+      if (hasToken) {
+        // Open the set-password / recovery form. The widget keeps the recovery
+        // state after consuming the token, so open() shows the right screen.
+        var openForm = function () { try { identity.open(); } catch (e) {} };
+        identity.on("init", openForm); // fires if init hasn't completed yet
+        openForm();                    // and run now in case it already did
+      }
     })();
   </script>
 
