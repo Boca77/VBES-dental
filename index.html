@@ -15,8 +15,6 @@
   <link rel="stylesheet" href="assets/css/fonts.css">
   <link rel="stylesheet" href="assets/css/styles.css">
 
-  <!-- Save any invite/recovery token BEFORE the widget loads and strips it from the URL. -->
-  <script>window.__entryHash = window.location.hash || "";</script>
   <!-- Netlify Identity widget (only used here to accept invite / recovery links) -->
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
@@ -270,18 +268,12 @@
     (function () {
       var identity = window.netlifyIdentity;
       if (!identity) return;
-      // Use the hash captured in <head>, since the widget has already cleared the URL by now.
-      var hash = window.__entryHash || "";
-      var hasToken = /(invite_token|recovery_token|confirmation_token|email_change_token)=/.test(hash);
-      // After setting a password / signing in from an invite, go to the admin panel.
+      // After accepting the invite / signing in, go to the admin panel.
       identity.on("login", function () { window.location.href = "admin.html"; });
-      if (hasToken) {
-        // Open the set-password / recovery form. The widget keeps the recovery
-        // state after consuming the token, so open() shows the right screen.
-        var openForm = function () { try { identity.open(); } catch (e) {} };
-        identity.on("init", openForm); // fires if init hasn't completed yet
-        openForm();                    // and run now in case it already did
-      }
+      // init() makes the widget read any invite_token / recovery_token from the
+      // URL and open the correct form itself (set-password for invites). We must
+      // NOT call open() ourselves - that overrides the form and shows a blank modal.
+      identity.init();
     })();
   </script>
 
