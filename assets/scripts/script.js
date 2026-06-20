@@ -356,7 +356,7 @@ function createBooking($root, opts) {
           <div class="pane-title" data-i18n="book.your_details"></div>
           <div class="form-grid">
             <div class="field full" data-f="name"><label><span data-i18n="book.name"></span> <span class="req">*</span></label><input type="text" name="name" autocomplete="name"></div>
-            <div class="field full" data-f="phone"><label><span data-i18n="book.phone"></span> <span class="req">*</span></label><input type="tel" name="phone" autocomplete="tel"></div>
+            <div class="field full" data-f="phone"><label><span data-i18n="book.phone"></span></label><input type="tel" name="phone" autocomplete="tel"></div>
             <div class="field full" data-f="notes"><label data-i18n="book.notes"></label><textarea name="notes"></textarea></div>
           </div>
           <div class="summary-card">
@@ -530,7 +530,7 @@ function createBooking($root, opts) {
 
   function validateDetails() {
     let valid = true;
-    ["name", "phone"].forEach(f => {
+    ["name"].forEach(f => {
       const $f = $root.find(`.field[data-f="${f}"]`);
       const v = $f.find("input").val().trim();
       if (!v) { $f.addClass("invalid"); valid = false; } else $f.removeClass("invalid");

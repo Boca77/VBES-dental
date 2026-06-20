@@ -1000,7 +1000,7 @@ window.bookingHelpers = { loadAppts, saveAppts, parseYmd, fmtLongDate, slotsForD
             <input type="text" id="afName" autocomplete="off">
           </div>
           <div class="af-field full" data-f="phone">
-            <label>${adminT("ad.f_phone")} <span class="req">*</span></label>
+            <label>${adminT("ad.f_phone")} <span style="color:var(--muted);font-weight:600">· ${adminT("ad.opt")}</span></label>
             <input type="tel" id="afPhone" autocomplete="off">
           </div>
           <div class="af-field full" data-f="notes">
@@ -1032,7 +1032,7 @@ window.bookingHelpers = { loadAppts, saveAppts, parseYmd, fmtLongDate, slotsForD
     let ok = true;
     const name = $("#afName").val().trim();
     const phone = $("#afPhone").val().trim();
-    [["name", name], ["phone", phone]].forEach(([f, v]) => {
+    [["name", name]].forEach(([f, v]) => {
       const $f = $(`#addBody .af-field[data-f="${f}"]`);
       if (!v) { $f.addClass("invalid"); ok = false; } else $f.removeClass("invalid");
     });
