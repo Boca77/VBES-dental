@@ -91,6 +91,9 @@ window.I18N = {
     "book.cancelled": "Терминот е откажан.",
     "book.required": "Пополнете ги задолжителните полиња.",
     "book.pick_first": "Прво изберете услуга, датум и време.",
+    "book.sending": "Се испраќа…",
+    "book.rate_limited": "Почекајте малку пред да испратите ново барање.",
+    "book.error": "Нешто тргна наопаку. Обидете се повторно.",
     "book.with": "Услуга",
     "book.when": "Термин",
 
@@ -211,6 +214,9 @@ window.I18N = {
     "book.cancelled": "Appointment cancelled.",
     "book.required": "Please fill in the required fields.",
     "book.pick_first": "First choose a service, date and time.",
+    "book.sending": "Sending…",
+    "book.rate_limited": "Please wait a moment before sending another request.",
+    "book.error": "Something went wrong. Please try again.",
     "book.with": "Service",
     "book.when": "When",
 
@@ -266,7 +272,7 @@ window.SERVICES = [
    can't read others' bookings); confirmBooking() still writes the
    pending request through saveAppts(). */
 function loadAppts() { return window.DVBES_DB ? window.DVBES_DB.load() : []; }
-function saveAppts(list) { if (window.DVBES_DB) window.DVBES_DB.save(list); }
+function saveAppts(list) { return window.DVBES_DB ? window.DVBES_DB.save(list) : Promise.resolve(); }
 
 /* The visitor's own booking requests, kept on their own device. This is
    their data, not other patients', so localStorage is fine here. */
@@ -560,16 +566,27 @@ function createBooking($root, opts) {
       source: "online",
       status: "pending"   // booking is a request; admin approves it in the dashboard
     };
-    const list = loadAppts(); list.push(appt); saveAppts(list);
-    const mine = loadMine(); mine.push(appt); saveMine(mine);   // remember on this device
-    state.lastAppt = appt;
-    // fill confirm pane
-    $root.find(".c-svc").text(t("svc." + appt.service));
-    $root.find(".c-when").text(fmtLongDate(parseYmd(appt.date)) + " · " + appt.time);
-    $root.find(".c-ref").text(appt.ref);
-    go(3);
-    if (opts.onBooked) opts.onBooked(appt);
-    document.dispatchEvent(new CustomEvent("dvbes:booked", { detail: appt }));
+    const $next = $root.find(".nav-next");
+    $next.prop("disabled", true);
+    $hint.text(t("book.sending"));
+
+    const list = loadAppts(); list.push(appt);
+    Promise.resolve(saveAppts(list)).then(() => {
+      const mine = loadMine(); mine.push(appt); saveMine(mine);   // remember on this device
+      state.lastAppt = appt;
+      // fill confirm pane
+      $root.find(".c-svc").text(t("svc." + appt.service));
+      $root.find(".c-when").text(fmtLongDate(parseYmd(appt.date)) + " · " + appt.time);
+      $root.find(".c-ref").text(appt.ref);
+      $hint.text("");
+      $next.prop("disabled", false);
+      go(3);
+      if (opts.onBooked) opts.onBooked(appt);
+      document.dispatchEvent(new CustomEvent("dvbes:booked", { detail: appt }));
+    }).catch((e) => {
+      $next.prop("disabled", false);
+      $hint.text(t(e && e.code === "permission-denied" ? "book.rate_limited" : "book.error"));
+    });
   }
 
   /* ---- ICS download ---- */
