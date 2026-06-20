@@ -14,9 +14,6 @@
   
   <link rel="stylesheet" href="assets/css/fonts.css">
   <link rel="stylesheet" href="assets/css/styles.css">
-
-  <!-- Netlify Identity widget (only used here to accept invite / recovery links) -->
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
 
@@ -260,22 +257,15 @@
   </div>
 
   <!-- ===================== SCRIPTS ===================== -->
+  <!-- Firebase (compat SDK) - lets the booking form submit requests to Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="assets/scripts/firebase-config.js"></script>
+  <script src="assets/scripts/firebase-data.js"></script>
+
   <script src="assets/scripts/jquery.min.js"></script>
   <script src="assets/scripts/script.js"></script>
-
-  <!-- Catch Netlify Identity invite / recovery / confirmation links that land on the homepage. -->
-  <script>
-    (function () {
-      var identity = window.netlifyIdentity;
-      if (!identity) return;
-      // After accepting the invite / signing in, go to the admin panel.
-      identity.on("login", function () { window.location.href = "admin.html"; });
-      // init() makes the widget read any invite_token / recovery_token from the
-      // URL and open the correct form itself (set-password for invites). We must
-      // NOT call open() ourselves - that overrides the form and shows a blank modal.
-      identity.init();
-    })();
-  </script>
 
   
 

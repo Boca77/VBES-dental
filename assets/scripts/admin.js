@@ -263,13 +263,11 @@ window.SERVICES = [
   { key: "prp",         icon: "ti ti-droplet" }
 ];
 
-const STORE_KEY = "dvbes_appts";
-
-function loadAppts() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
-  catch (e) { return []; }
-}
-function saveAppts(list) { localStorage.setItem(STORE_KEY, JSON.stringify(list)); }
+/* Appointments live in Firestore via the shared data layer (firebase-data.js).
+   loadAppts() reads the in-memory cache (kept live by a listener once the admin
+   is signed in); saveAppts() writes the changes back to Firestore. */
+function loadAppts() { return window.DVBES_DB ? window.DVBES_DB.load() : []; }
+function saveAppts(list) { if (window.DVBES_DB) window.DVBES_DB.save(list); }
 
 /* deterministic 0..1 from a string (for stable "taken" slots) */
 function hash01(str) {
@@ -636,7 +634,7 @@ window.bookingHelpers = { loadAppts, saveAppts, parseYmd, fmtLongDate, slotsForD
 
 /* ============================================================
    DentalVBES - Admin dashboard logic (jQuery)
-   Shares the public booking store (localStorage "dvbes_appts")
+   Shares the Firestore "appointments" store via window.DVBES_DB
    Reuses window.SERVICES, window.I18N and window.bookingHelpers
    ============================================================ */
 
@@ -814,33 +812,6 @@ window.bookingHelpers = { loadAppts, saveAppts, parseYmd, fmtLongDate, slotsForD
   }
   function makeRef() {
     return "VB-" + (Date.now().toString(36) + Math.random().toString(36).slice(2, 5)).toUpperCase().slice(-6);
-  }
-
-  /* ---- seed a few demo appointments the FIRST time only (so the calendar isn't empty) ---- */
-  function seedIfEmpty() {
-    if (localStorage.getItem("dvbes_seeded")) return;
-    if (H.loadAppts().length) { localStorage.setItem("dvbes_seeded", "1"); return; }
-    const demo = [
-      { svc: "opsta", off: 0, time: "12:00", name: "Марко Стојановски", phone: "+389 70 221 845" },
-      { svc: "protetika", off: 0, time: "13:30", name: "Елена Петрова", phone: "+389 71 994 102" },
-      { svc: "estetska", off: 0, time: "16:30", name: "Ана Николовска", phone: "+389 75 308 760" },
-      { svc: "decija", off: 1, time: "12:30", name: "Бојан Илиев", phone: "+389 70 558 221" },
-      { svc: "ortodoncija", off: 1, time: "14:00", name: "Сара Трајкова", phone: "+389 78 410 933" },
-      { svc: "prp", off: 2, time: "13:00", name: "Ивана Ристеска", phone: "+389 72 145 670" },
-      { svc: "paro", off: 3, time: "12:30", name: "Дејан Ангелов", phone: "+389 70 882 314" },
-      { svc: "opsta", off: 3, time: "17:00", name: "Кристина Јованова", phone: "+389 71 233 489" },
-      { svc: "protetika", off: 5, time: "13:00", name: "Филип Костов", phone: "+389 75 670 118" },
-      { svc: "estetska", off: 6, time: "12:00", name: "Маја Спасова", phone: "+389 70 904 552" },
-      { svc: "prp", off: 8, time: "14:30", name: "Никола Митрев", phone: "+389 78 661 207" }
-    ];
-    const list = [];
-    demo.forEach(x => {
-      const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() + x.off);
-      while (d.getDay() === 0) d.setDate(d.getDate() + 1);   // skip Sundays
-      list.push({ ref: makeRef(), service: x.svc, date: ymd(d), time: x.time, name: x.name, phone: x.phone, email: "", notes: "", created: Date.now(), source: "online" });
-    });
-    H.saveAppts(list);
-    localStorage.setItem("dvbes_seeded", "1");
   }
 
   /* ---- state ---- */
@@ -1322,7 +1293,9 @@ window.bookingHelpers = { loadAppts, saveAppts, parseYmd, fmtLongDate, slotsForD
 
   /* ====================== init ====================== */
   $(function () {
-    seedIfEmpty();
+    // Re-render whenever the Firestore data layer reports a change
+    // (initial load after sign-in, live updates, new pending requests).
+    document.addEventListener("dvbes:data", refreshAll);
     applyTheme(localStorage.getItem("dvbes_theme") || "clinical");
     document.documentElement.setAttribute("lang", window.LANG);
 

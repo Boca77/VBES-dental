@@ -261,13 +261,20 @@ window.SERVICES = [
   { key: "prp",         icon: "ti ti-droplet" }
 ];
 
-const STORE_KEY = "dvbes_appts";
+/* Appointments are stored in Firestore via the shared data layer
+   (firebase-data.js). On the public site the cache is empty (visitors
+   can't read others' bookings); confirmBooking() still writes the
+   pending request through saveAppts(). */
+function loadAppts() { return window.DVBES_DB ? window.DVBES_DB.load() : []; }
+function saveAppts(list) { if (window.DVBES_DB) window.DVBES_DB.save(list); }
 
-function loadAppts() {
-  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+/* The visitor's own booking requests, kept on their own device. This is
+   their data, not other patients', so localStorage is fine here. */
+function loadMine() {
+  try { return JSON.parse(localStorage.getItem("dvbes_my")) || []; }
   catch (e) { return []; }
 }
-function saveAppts(list) { localStorage.setItem(STORE_KEY, JSON.stringify(list)); }
+function saveMine(list) { localStorage.setItem("dvbes_my", JSON.stringify(list)); }
 
 /* deterministic 0..1 from a string (for stable "taken" slots) */
 function hash01(str) {
@@ -554,6 +561,7 @@ function createBooking($root, opts) {
       status: "pending"   // booking is a request; admin approves it in the dashboard
     };
     const list = loadAppts(); list.push(appt); saveAppts(list);
+    const mine = loadMine(); mine.push(appt); saveMine(mine);   // remember on this device
     state.lastAppt = appt;
     // fill confirm pane
     $root.find(".c-svc").text(t("svc." + appt.service));
@@ -757,7 +765,7 @@ $(function () {
 
   /* ---------- MY APPOINTMENTS ---------- */
   function renderAppts() {
-    const list = window.bookingHelpers.loadAppts().slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+    const list = loadMine().slice().sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
     const $body = $("#apptList").empty();
     if (!list.length) {
       $body.append(`<div class="empty-state"><i class="bi bi-calendar-x"></i>${window.t("book.none_yet")}</div>`);
@@ -776,8 +784,8 @@ $(function () {
           <button class="appt-cancel">${window.t("book.cancel")}</button>
         </div>`);
       $row.find(".appt-cancel").on("click", () => {
-        const all = window.bookingHelpers.loadAppts().filter(x => x.ref !== a.ref);
-        window.bookingHelpers.saveAppts(all);
+        const all = loadMine().filter(x => x.ref !== a.ref);
+        saveMine(all);
         renderAppts();
       });
       $body.append($row);
