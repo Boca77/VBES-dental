@@ -14,6 +14,9 @@
   
   <link rel="stylesheet" href="assets/css/fonts.css">
   <link rel="stylesheet" href="assets/css/styles.css">
+
+  <!-- Netlify Identity widget (only used here to accept invite / recovery links) -->
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
 
@@ -259,6 +262,20 @@
   <!-- ===================== SCRIPTS ===================== -->
   <script src="assets/scripts/jquery.min.js"></script>
   <script src="assets/scripts/script.js"></script>
+
+  <!-- Catch Netlify Identity invite / recovery / confirmation links that land on the homepage. -->
+  <script>
+    (function () {
+      var identity = window.netlifyIdentity;
+      if (!identity) return;
+      var hash = window.location.hash || "";
+      var hasToken = /(invite_token|recovery_token|confirmation_token|email_change_token)=/.test(hash);
+      identity.on("init", function () { if (hasToken) identity.open(); });
+      // After setting a password / signing in from an invite, go to the admin panel.
+      identity.on("login", function () { window.location.href = "admin.html"; });
+      identity.init();
+    })();
+  </script>
 
   
 

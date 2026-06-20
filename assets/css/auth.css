@@ -1,0 +1,87 @@
+/* DentalVBES - admin auth gate styles */
+
+/* While gated, hide the admin UI and show only the login overlay. */
+body.gated .admin-top,
+body.gated .admin-body { display: none !important; }
+
+#authGate { display: none; }
+body.gated #authGate { display: flex; }
+
+#authGate {
+  position: fixed;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(45, 130, 200, .18), transparent 60%),
+    var(--bg, #f3f6fb);
+  z-index: 9999;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--card, #fff);
+  border: 1px solid var(--line, rgba(0, 0, 0, .08));
+  border-radius: 18px;
+  padding: 36px 32px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(20, 50, 90, .14);
+}
+
+.auth-card .auth-tooth {
+  width: 46px;
+  height: 46px;
+  color: var(--accent, #2d82c8);
+  margin-bottom: 14px;
+}
+
+.auth-card h1 {
+  font-size: 1.35rem;
+  margin: 0 0 6px;
+  color: var(--ink, #16263b);
+}
+
+.auth-card p {
+  margin: 0 0 22px;
+  color: var(--muted, #5b6b7d);
+  font-size: .95rem;
+  line-height: 1.5;
+}
+
+.auth-card .btn-login {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  cursor: pointer;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent, #2d82c8), var(--primary, #1f5fa0));
+  box-shadow: 0 8px 20px rgba(31, 95, 160, .3);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.auth-card .btn-login:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(31, 95, 160, .38); }
+.auth-card .btn-login:active { transform: translateY(0); }
+
+#authMsg { margin-top: 16px; min-height: 1em; color: #c0392b; font-size: .85rem; }
+
+/* Logout button in the top bar */
+.admin-top .auth-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line, rgba(0, 0, 0, .12));
+  background: transparent;
+  color: var(--ink, #16263b);
+  cursor: pointer;
+  padding: 7px 12px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: .85rem;
+}
+.admin-top .auth-logout:hover { background: rgba(0, 0, 0, .05); }
