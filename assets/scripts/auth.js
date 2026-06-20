@@ -34,8 +34,7 @@
     if (user) showApp(); else showLogin();
   });
 
-  // Reload after login so admin.js re-renders with the panel visible.
-  identity.on("login", function () { identity.close(); location.reload(); });
+  identity.on("login", function () { identity.close(); showApp(); });
   identity.on("logout", function () { showLogin(); });
 
   identity.init();
