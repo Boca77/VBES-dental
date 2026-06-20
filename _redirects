@@ -1,0 +1,2 @@
+# Serve the admin panel at a clean /admin URL (rewrite, keeps the URL as /admin)
+/admin    /admin.html    200

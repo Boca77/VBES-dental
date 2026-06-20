@@ -7,6 +7,30 @@ body.gated .admin-body { display: none !important; }
 #authGate { display: none; }
 body.gated #authGate { display: flex; }
 
+/* While Firebase restores the session, show a spinner instead of the
+   login form so a signed-in admin doesn't see the login card flash. */
+#authLoading { display: none; }
+body.auth-loading #authLoading { display: flex; }
+body.auth-loading #authGate { display: none; }
+
+#authLoading {
+  position: fixed;
+  inset: 0;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg, #f3f6fb);
+  z-index: 10000;
+}
+.auth-spinner {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 3px solid rgba(45, 130, 200, .25);
+  border-top-color: var(--accent, #2d82c8);
+  animation: auth-spin .7s linear infinite;
+}
+@keyframes auth-spin { to { transform: rotate(360deg); } }
+
 #authGate {
   position: fixed;
   inset: 0;

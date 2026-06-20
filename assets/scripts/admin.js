@@ -929,10 +929,11 @@ window.bookingHelpers = { loadAppts, saveAppts, parseYmd, fmtLongDate, slotsForD
       return;
     }
     const now = new Date(); const isToday = state.sel === ymd(today);
+    const isPastDay = d < today;
     const $grid = $('<div class="slot-board"></div>');
     slots.forEach(tm => {
       const [hh, mm] = tm.split(":").map(Number);
-      const passed = isToday && (hh * 60 + mm) <= (now.getHours() * 60 + now.getMinutes());
+      const passed = isPastDay || (isToday && (hh * 60 + mm) <= (now.getHours() * 60 + now.getMinutes()));
       const a = byTime[tm];
       if (a) {
         const pending = isPending(a);
@@ -1038,6 +1039,7 @@ window.bookingHelpers = { loadAppts, saveAppts, parseYmd, fmtLongDate, slotsForD
 
   function firstFreeSlot(date) {
     const d = H.parseYmd(date);
+    if (d < today) return null;           // no booking in the past
     const slots = H.slotsForDate(d);
     const booked = {}; H.loadAppts().forEach(a => { if (a.date === date) booked[a.time] = true; });
     const now = new Date(); const isToday = date === ymd(today);

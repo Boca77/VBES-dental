@@ -16,7 +16,10 @@
   <link rel="stylesheet" href="assets/css/admin.css">
   <link rel="stylesheet" href="assets/css/auth.css">
 </head>
-<body class="gated">
+<body class="gated auth-loading">
+
+  <!-- shown only while Firebase is restoring the session (prevents a login flash) -->
+  <div id="authLoading"><div class="auth-spinner"></div></div>
 
   <!-- ===================== LOGIN GATE ===================== -->
   <div id="authGate">
