@@ -7,6 +7,9 @@ body.gated .admin-body { display: none !important; }
 #authGate { display: none; }
 body.gated #authGate { display: flex; }
 
+/* Keep the Netlify Identity modal above our login overlay (#authGate). */
+#netlify-identity-widget { z-index: 99999 !important; }
+
 #authGate {
   position: fixed;
   inset: 0;
