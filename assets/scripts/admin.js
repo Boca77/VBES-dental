@@ -18,7 +18,7 @@ window.I18N = {
     "hero.stat1n": "20+", "hero.stat1l": "години искуство",
     "hero.stat2n": "7", "hero.stat2l": "специјалности",
     "hero.stat3n": "PRP", "hero.stat3l": "напредни третмани",
-    "hero.hours": "Отворено денес · 12:00–19:00",
+    "hero.hours": "Отворено денес · 11:00–19:00",
 
     "services.eyebrow": "Што нудиме",
     "services.title": "Услуги кои ги нудиме",
@@ -99,9 +99,9 @@ window.I18N = {
     "foot.address": "ул. Главна 123<br>Скопје, Македонија",
     "foot.hours": "Работно време",
     "foot.h_week": "Понеделник – Петок",
-    "foot.h_week_v": "12:00 – 19:00",
+    "foot.h_week_v": "11:00 – 19:00",
     "foot.h_sat": "Сабота",
-    "foot.h_sat_v": "12:00 – 17:00",
+    "foot.h_sat_v": "11:00 – 19:00",
     "foot.h_sun": "Недела",
     "foot.h_sun_v": "Затворено",
     "foot.h_break": "Пауза секој ден",
@@ -139,7 +139,7 @@ window.I18N = {
     "hero.stat1n": "20+", "hero.stat1l": "years of experience",
     "hero.stat2n": "7", "hero.stat2l": "specialties",
     "hero.stat3n": "PRP", "hero.stat3l": "advanced treatments",
-    "hero.hours": "Open today · 12:00–19:00",
+    "hero.hours": "Open today · 11:00–19:00",
 
     "services.eyebrow": "What we offer",
     "services.title": "Services we provide",
@@ -220,9 +220,9 @@ window.I18N = {
     "foot.address": "123 Main Street<br>Skopje, North Macedonia",
     "foot.hours": "Working hours",
     "foot.h_week": "Monday – Friday",
-    "foot.h_week_v": "12:00 – 19:00",
+    "foot.h_week_v": "11:00 – 19:00",
     "foot.h_sat": "Saturday",
-    "foot.h_sat_v": "12:00 – 17:00",
+    "foot.h_sat_v": "11:00 – 19:00",
     "foot.h_sun": "Sunday",
     "foot.h_sun_v": "Closed",
     "foot.h_break": "Daily break",
@@ -285,8 +285,8 @@ function parseYmd(s) { const [y, m, d] = s.split("-").map(Number); return new Da
 function slotsForDate(d) {
   const wd = d.getDay();              // 0 Sun .. 6 Sat
   if (wd === 0) return [];            // closed Sunday
-  const open = 12 * 60;
-  const close = (wd === 6 ? 17 : 19) * 60;
+  const open = 11 * 60;
+  const close = 19 * 60;
   const brkS = 15 * 60, brkE = 16 * 60;
   const out = [];
   for (let t = open; t + 30 <= close; t += 30) {
