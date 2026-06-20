@@ -22,14 +22,16 @@
   function showApp() { document.body.classList.remove("gated"); }
   function showLogin() { document.body.classList.add("gated"); }
 
+  // Attach button handlers immediately, regardless of whether the widget's
+  // "init" event ever fires (it won't if the Identity instance is unreachable).
+  var loginBtn = document.getElementById("authLoginBtn");
+  if (loginBtn) loginBtn.addEventListener("click", function () { identity.open("login"); });
+
+  var logoutBtn = document.getElementById("authLogout");
+  if (logoutBtn) logoutBtn.addEventListener("click", function () { identity.logout(); });
+
   identity.on("init", function (user) {
     if (user) showApp(); else showLogin();
-
-    var loginBtn = document.getElementById("authLoginBtn");
-    if (loginBtn) loginBtn.addEventListener("click", function () { identity.open("login"); });
-
-    var logoutBtn = document.getElementById("authLogout");
-    if (logoutBtn) logoutBtn.addEventListener("click", function () { identity.logout(); });
   });
 
   // Reload after login so admin.js re-renders with the panel visible.
