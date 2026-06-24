@@ -2315,6 +2315,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .hstat span { font-size: 13.5px; color: rgba(255,255,255,.82); margin-top: 6px; display: block; }
 .hero-badge { position: absolute; right: clamp(20px, 5vw, 60px); bottom: 40px; display: inline-flex; align-items: center; gap: 9px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(8px); border-radius: var(--r-pill); padding: 10px 18px; font-size: 14px; font-weight: 600; }
 .hero-badge .dot { width: 9px; height: 9px; border-radius: 50%; background: #46e08a; box-shadow: 0 0 0 4px rgba(70,224,138,.25); }
+.hero-badge.is-closed .dot { background: #9aa3ad; box-shadow: 0 0 0 4px rgba(154,163,173,.25); }
 @media (max-width: 720px) { .hero-badge { display: none; } }
 
 /* ---------- services ---------- */
@@ -2543,7 +2544,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .modal.open .modal-backdrop { opacity: 1; }
 .modal-card {
   position: absolute; top: 50%; left: 50%; transform: translate(-50%, -46%); opacity: 0;
-  width: min(960px, 94vw); max-height: 92vh; overflow: auto;
+  width: min(960px, 94vw); max-height: 92vh; max-height: 92dvh; overflow: auto;
   background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-lg);
   transition: transform .35s var(--ease), opacity .3s;
 }
@@ -2590,4 +2591,47 @@ ul { margin: 0; padding: 0; list-style: none; }
   .hero-stats { gap: 10px; }
   .hstat { min-width: 0; flex: 1; padding: 14px; }
   .slot-list { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ---------- mobile header: keep the brand from crowding the nav tools ---------- */
+@media (max-width: 600px) {
+  .site-header .container { padding-inline: 14px; }
+  .nav { gap: 10px; height: 64px; }
+  .brand { gap: 8px; }
+  .brand .tooth { width: 28px !important; height: 28px !important; }
+  .brand-name { font-size: 18px; }
+  .nav-tools { gap: 8px; }
+  /* compact the language toggle so it doesn't push the brand off-screen */
+  .lang-toggle span { padding: 6px 10px !important; font-size: 12px; }
+}
+@media (max-width: 360px) {
+  .brand-name { font-size: 16px; }
+  .icon-btn { width: 40px !important; height: 40px !important; }
+}
+
+/* ---------- touch targets (>=44px tap area on touch/coarse pointers) ---------- */
+@media (pointer: coarse) {
+  .icon-btn { width: 44px; height: 44px; }
+  .cal-nav button { width: 44px; height: 44px; }
+  .modal-close { width: 44px; height: 44px; }
+  .lang-toggle span { padding: 8px 12px; }
+  .appt-cancel { padding: 11px 18px; }
+  .slot { padding: 13px 6px; }
+  .cal-dow { padding: 4px 0; }
+}
+
+/* ---------- small phones ---------- */
+@media (max-width: 480px) {
+  /* Full-width CTAs are easier to tap and avoid awkward wrapping */
+  .hero-cta { flex-direction: column; align-items: stretch; }
+  .hero-cta .btn { justify-content: center; }
+  /* Booking nav: let Prev/Next reflow instead of crowding on one line */
+  .book-nav { flex-wrap: wrap; }
+  .book-nav .book-hint { flex-basis: 100%; order: -1; }
+  /* Footer bottom: stack the two lines */
+  .foot-bottom { flex-direction: column; align-items: flex-start; gap: 6px; }
+  /* Tighten hero top padding under the fixed header */
+  .hero-inner { padding-top: 84px; }
+  /* Confirmation actions stack full-width */
+  .confirm-actions .btn { width: 100%; }
 }

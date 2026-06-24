@@ -2623,14 +2623,22 @@ ul { margin: 0; padding: 0; list-style: none; }
 .admin-date-now .bi { color: var(--primary); }
 @media (max-width: 760px) { .admin-date-now, .admin-tag { display: none; } }
 @media (max-width: 600px) {
-  .admin-top .inner { gap: 10px; min-height: 60px; }
-  .admin-brand .bn { font-size: 18px; }
-  .admin-brand .tooth { width: 28px; height: 28px; }
+  .admin-top .inner { gap: 8px; min-height: 60px; }
+  .admin-top .container { padding-inline: 14px; }
+  /* keep the brand at its natural width so the name can't shrink under the
+     lang toggle; the spacer absorbs the slack and pushes the actions right */
+  .admin-brand { flex: none; min-width: auto; gap: 8px; }
+  .admin-brand .bn { font-size: 17px; }
+  .admin-brand .tooth { width: 26px; height: 26px; }
   /* collapse the header action to an icon-only "+" so it never overflows;
      the agenda panel still has a full "New appointment" button */
   .admin-top .js-add { padding: 9px 13px; }
   .admin-top .js-add span { display: none; }
   .admin-top .js-add .bi { font-size: 18px; }
+  /* collapse logout to an icon too, so the brand isn't squeezed */
+  .admin-top .auth-logout { padding: 8px 11px; }
+  .admin-top .auth-logout span { display: none; }
+  .admin-top .auth-logout .bi { font-size: 17px; }
 }
 
 /* ---------- page heading ---------- */
@@ -2663,11 +2671,15 @@ ul { margin: 0; padding: 0; list-style: none; }
 .tab-badge { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: var(--r-pill); background: #e0864f; color: #fff; font-size: 11px; font-weight: 800; line-height: 1; }
 .admin-tab.active .tab-badge { background: rgba(255,255,255,.28); color: #fff; }
 @media (max-width: 640px) {
-  .admin-tabs { display: flex; width: 100%; }
-  .admin-tab { flex: 1; min-width: 0; justify-content: center; padding: 11px 10px; font-size: 13px; gap: 6px; }
-  .admin-tab span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .admin-tabs { display: flex; width: 100%; gap: 5px; }
+  /* stack the icon above the label so every tab is a balanced, centered cell
+     regardless of label length (MK labels like "Контролна табла" are long) */
+  .admin-tab { position: relative; flex: 1; min-width: 0; flex-direction: column; align-items: center; justify-content: flex-start; gap: 4px; padding: 9px 6px; font-size: 12px; line-height: 1.15; }
+  .admin-tab .bi { font-size: 17px; }
+  .admin-tab span:not(.tab-badge) { white-space: normal; text-align: center; }
+  /* show the pending count as a corner badge instead of pushing the label */
+  .admin-tab .tab-badge { position: absolute; top: 5px; right: 8px; }
 }
-@media (max-width: 360px) { .admin-tab .bi { display: none; } }
 
 .admin-grid { display: grid; grid-template-columns: 1.04fr .96fr; gap: 24px; align-items: start; }
 @media (max-width: 1000px) { .admin-grid { grid-template-columns: 1fr; } }

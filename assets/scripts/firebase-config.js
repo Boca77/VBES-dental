@@ -7,8 +7,8 @@
 
    NOTE: these values are NOT secret. The apiKey is a public
    identifier - it is safe to ship in client code. Your data is
-   protected by Firestore Security Rules (see firestore.rules),
-   NOT by hiding this config.
+   protected by Firestore Security Rules (managed in the Firebase
+   console), NOT by hiding this config.
    ============================================================ */
 var firebaseConfig = {
   apiKey: "AIzaSyC7uI1isuNib65icl7LXzlciCy0QJmxsDo",
