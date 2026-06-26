@@ -2180,6 +2180,15 @@ url("../fonts/bootstrap-icons.woff") format("woff");
 
 /* ---------- base ---------- */
 * { box-sizing: border-box; }
+
+/* Mobile: kill the 300ms double-tap-to-zoom on tappable controls so quick
+   repeated taps on buttons/slots/inputs don't accidentally scale the page.
+   "manipulation" still allows panning/scrolling and pinch-to-zoom, so
+   accessibility zoom is preserved. Modern replacement for user-scalable=no. */
+button, a, label, input, select, textarea,
+.btn, .slot, .cal-cell, .svc-opt, .svc-link, .lang-toggle,
+.icon-btn, .fab, [role="button"] { touch-action: manipulation; }
+
 html { scroll-behavior: smooth; scroll-padding-top: 92px; }
 body {
   margin: 0;

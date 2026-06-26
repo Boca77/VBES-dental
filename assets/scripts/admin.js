@@ -66,6 +66,7 @@
       "ad.save": "Зачувај термин",
       "ad.cancel": "Откажи",
       "ad.required": "Пополнете ги задолжителните полиња и изберете време.",
+      "ad.phone_invalid": "Внесете валиден мобилен број (пр. 070123456 или +38970123456).",
       "ad.saved": "Терминот е зачуван.",
       "ad.save_error": "Зачувувањето не успеа. Проверете ја врската и обидете се повторно.",
       "ad.opt": "опционално",
@@ -137,6 +138,7 @@
       "ad.save": "Save appointment",
       "ad.cancel": "Cancel",
       "ad.required": "Fill the required fields and pick a time.",
+      "ad.phone_invalid": "Enter a valid mobile number (e.g. 070123456 or +38970123456).",
       "ad.saved": "Appointment saved.",
       "ad.save_error": "Saving failed. Check your connection and try again.",
       "ad.opt": "optional",
@@ -382,14 +384,19 @@
 
   function saveForm() {
     let ok = true;
+    let hint = "ad.required";
     const name = $("#afName").val().trim();
     const phone = $("#afPhone").val().trim();
     [["name", name]].forEach(([f, v]) => {
       const $f = $(`#addBody .af-field[data-f="${f}"]`);
       if (!v) { $f.addClass("invalid"); ok = false; } else $f.removeClass("invalid");
     });
+    // Phone is optional here, but if provided it must be a valid MK mobile.
+    const $phone = $("#addBody .af-field[data-f='phone']");
+    if (phone && !window.isValidMkMobile(phone)) { $phone.addClass("invalid"); ok = false; hint = "ad.phone_invalid"; }
+    else $phone.removeClass("invalid");
     if (!state.formDate || !state.formTime) ok = false;
-    if (!ok) { $("#afHint").text(adminT("ad.required")); return; }
+    if (!ok) { $("#afHint").text(adminT(hint)); return; }
     const email = $("#afEmail").val().trim();
     const notes = $("#afNotes").val().trim();
     let appt;

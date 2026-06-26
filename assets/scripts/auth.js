@@ -18,6 +18,14 @@
   }
   var auth = firebase.auth();
 
+  /* Keep the admin signed in across browser sessions, restarts and refreshes.
+     LOCAL persistence stores the session in IndexedDB/localStorage, so the
+     user only logs in once per device; Firebase clears it only on explicit
+     sign-out or when the session/account becomes invalid. (This is also the
+     SDK default, but we set it explicitly so the behaviour can't regress.) */
+  var persistenceReady = auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .catch(function (e) { console.warn("Could not set auth persistence:", e && e.message); });
+
   function showApp() { document.body.classList.remove("gated"); }
   function showLogin() { document.body.classList.add("gated"); }
 
@@ -43,7 +51,10 @@
       var pass = document.getElementById("authPassword").value || "";
       var msg = document.getElementById("authMsg");
       if (msg) msg.textContent = "";
-      auth.signInWithEmailAndPassword(email, pass)
+      // Wait for LOCAL persistence to be in effect before signing in, so the
+      // session is guaranteed to survive browser restarts.
+      persistenceReady
+        .then(function () { return auth.signInWithEmailAndPassword(email, pass); })
         .then(function () { location.reload(); })   // rebuild the dashboard DOM, now authenticated
         .catch(function (err) {
           if (msg) msg.textContent = err && err.message ? err.message : "Login failed.";

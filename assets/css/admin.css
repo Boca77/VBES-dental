@@ -2180,6 +2180,15 @@ url("../fonts/bootstrap-icons.woff") format("woff");
 
 /* ---------- base ---------- */
 * { box-sizing: border-box; }
+
+/* Mobile: kill the 300ms double-tap-to-zoom on tappable controls so quick
+   repeated taps on slots/buttons/inputs don't accidentally scale the page.
+   "manipulation" still allows panning/scrolling and pinch-to-zoom, so
+   accessibility zoom is preserved. Modern replacement for user-scalable=no. */
+button, a, label, input, select, textarea,
+.btn, .tslot, .acal-cell, .admin-tab, .m-step, .lang-toggle,
+.dp-cell, .auth-logout, [role="button"] { touch-action: manipulation; }
+
 html { scroll-behavior: smooth; scroll-padding-top: 92px; }
 body {
   margin: 0;
@@ -2609,7 +2618,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   display: flex; align-items: center; gap: 16px; min-height: 74px; min-width: 0;
 }
 .admin-brand { min-width: 0; }
-.admin-brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+.admin-brand { display: flex; align-items: center; gap: 11px; text-decoration: none; cursor: default; user-select: none; }
 .admin-brand .tooth { width: 32px; height: 32px; flex: none; color: var(--accent); }
 .admin-brand .bn { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: -.02em; color: var(--ink); }
 .admin-brand .bn b { color: var(--accent); }

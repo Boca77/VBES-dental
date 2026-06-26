@@ -92,6 +92,7 @@ window.I18N = {
     "book.cancel": "Откажи",
     "book.cancelled": "Терминот е откажан.",
     "book.required": "Пополнете ги задолжителните полиња.",
+    "book.phone_invalid": "Внесете валиден мобилен број (пр. 070123456 или +38970123456).",
     "book.pick_first": "Прво изберете услуга, датум и време.",
     "book.sending": "Се испраќа…",
     "book.rate_limited": "Почекајте малку пред да испратите ново барање.",
@@ -217,6 +218,7 @@ window.I18N = {
     "book.cancel": "Cancel",
     "book.cancelled": "Appointment cancelled.",
     "book.required": "Please fill in the required fields.",
+    "book.phone_invalid": "Enter a valid mobile number (e.g. 070123456 or +38970123456).",
     "book.pick_first": "First choose a service, date and time.",
     "book.sending": "Sending…",
     "book.rate_limited": "Please wait a moment before sending another request.",
@@ -317,6 +319,24 @@ function fmtLongDate(d) {
 function makeRef() {
   return "VB-" + (Date.now().toString(36) + Math.random().toString(36).slice(2, 5)).toUpperCase().slice(-6);
 }
+
+/* ============================================================
+   Macedonian mobile phone validation (single source of truth,
+   used by the public booking form and the admin dashboard; the
+   same rule is mirrored server-side in firestore.rules).
+
+   Accepts ONLY mobile numbers:
+     national:      07X NNNNNN   e.g. 070123456
+     international: +3897X NNNNNN e.g. +38970123456
+   where the mobile operator digit X is one of 0,1,2,5,6,7,8.
+   Landlines, foreign numbers, wrong lengths and any letters or
+   stray symbols (other than a single leading +) are rejected.
+   ============================================================ */
+var MK_MOBILE_RE = /^(?:\+389|0)7[0125678]\d{6}$/;
+function isValidMkMobile(value) {
+  return MK_MOBILE_RE.test(String(value == null ? "" : value).trim());
+}
+window.isValidMkMobile = isValidMkMobile;
 
 function createBooking($root, opts) {
   opts = opts || {};
@@ -546,18 +566,25 @@ function createBooking($root, opts) {
     $hint.text(state.step === 1 && !ok ? hint : "");
   }
 
+  /* Returns "" when the details are valid, otherwise the i18n key of the
+     first problem so the caller can show a clear, specific message. */
   function validateDetails() {
-    let valid = true;
+    let firstError = "";
     ["name", "phone"].forEach(f => {
       const $f = $root.find(`.field[data-f="${f}"]`);
       const v = $f.find("input").val().trim();
-      if (!v) { $f.addClass("invalid"); valid = false; } else $f.removeClass("invalid");
+      let bad = !v;
+      // Required + Macedonian-mobile format check for the phone field.
+      if (f === "phone" && v && !window.isValidMkMobile(v)) { bad = true; firstError = firstError || "book.phone_invalid"; }
+      if (bad) { $f.addClass("invalid"); firstError = firstError || "book.required"; }
+      else $f.removeClass("invalid");
     });
-    return valid;
+    return firstError;
   }
 
   function confirmBooking() {
-    if (!validateDetails()) { $hint.text(t("book.required")); return; }
+    const err = validateDetails();
+    if (err) { $hint.text(t(err)); return; }
     const appt = {
       ref: makeRef(),
       service: state.service,
